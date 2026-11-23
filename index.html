@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Aulas complementares</title>
+  <meta name="theme-color" content="#185FA5">
+  <meta name="description" content="Videoaulas, links e documentos complementares.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Aulas">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <button id="btn-voltar" class="icon-btn" aria-label="Voltar" hidden>&#8592;</button>
+    <div class="topbar-text">
+      <h1 id="titulo-topo">Aulas</h1>
+      <p id="subtitulo-topo"></p>
+    </div>
+    <button id="btn-instalar" class="install-btn" hidden>Instalar</button>
+  </header>
+
+  <div id="aviso-ios" class="banner" hidden>
+    <span>Para instalar no iPhone: toque em <strong>Compartilhar</strong> e depois em <strong>Adicionar à Tela de Início</strong>.</span>
+    <button id="fechar-aviso-ios" class="banner-close" aria-label="Fechar aviso">&times;</button>
+  </div>
+
+  <main id="app" tabindex="-1"></main>
+
+  <div id="status-rede" class="toast" role="status" hidden>Sem conexão. Mostrando o conteúdo salvo.</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
