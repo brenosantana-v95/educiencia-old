@@ -13,7 +13,13 @@ var CASCA = [
 ];
 
 self.addEventListener("install", function (e) {
-  e.waitUntil(caches.open(CACHE_CASCA).then(function (c) { return c.addAll(CASCA); }));
+  /* aulas.json entra no cache de dados: a primeira abertura ainda não passa pelo SW. */
+  e.waitUntil(Promise.all([
+    caches.open(CACHE_CASCA).then(function (c) { return c.addAll(CASCA); }),
+    caches.open(CACHE_DADOS).then(function (c) {
+      return c.add(new Request("data/aulas.json", { cache: "no-cache" }));
+    })
+  ]));
   self.skipWaiting();
 });
 
