@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "wsl.exe -d Ubuntu-24.04 --cd /home/brema/dev/aulas-complementares --exec /home/brema/.local/bin/code-review-graph update --quiet",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "wsl.exe -d Ubuntu-24.04 --cd /home/brema/dev/aulas-complementares --exec /home/brema/.local/bin/code-review-graph status",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

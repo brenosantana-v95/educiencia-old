@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "code-review-graph": {
+      "type": "stdio",
+      "command": "wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu-24.04",
+        "--cd",
+        "/home/brema/dev/aulas-complementares",
+        "--exec",
+        "/home/brema/.venvs/code-review-graph/bin/python",
+        "-m",
+        "code_review_graph",
+        "serve"
+      ]
+    }
+  }
+}
