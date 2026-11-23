@@ -1,0 +1,45 @@
+{
+  "curso": {
+    "titulo": "Física 2º ano",
+    "professor": "Prof. Silva",
+    "descricao": "Conteúdos complementares das aulas."
+  },
+  "aulas": [
+    {
+      "id": "aula-1",
+      "titulo": "Cinemática: movimento e velocidade",
+      "descricao": "Revisão de posição, deslocamento e velocidade média, com exemplos do dia a dia.",
+      "duracao": "12 min",
+      "video": { "provedor": "youtube", "id": "SUBSTITUIR_ID_AQUI" },
+      "links": [
+        { "titulo": "Simulador de movimento (PhET)", "url": "https://phet.colorado.edu/pt_BR/" },
+        { "titulo": "Artigo complementar", "url": "https://pt.wikipedia.org/wiki/Cinem%C3%A1tica" }
+      ],
+      "documentos": [
+        { "titulo": "Lista de exercícios (PDF)", "url": "docs/exemplo-lista-exercicios.pdf" }
+      ]
+    },
+    {
+      "id": "aula-2",
+      "titulo": "Leis de Newton",
+      "descricao": "As três leis de Newton e como identificar forças em situações reais.",
+      "duracao": "18 min",
+      "video": { "provedor": "youtube", "id": "SUBSTITUIR_ID_AQUI" },
+      "links": [
+        { "titulo": "Resumo das Leis de Newton", "url": "https://pt.wikipedia.org/wiki/Leis_de_Newton" }
+      ],
+      "documentos": []
+    },
+    {
+      "id": "aula-3",
+      "titulo": "Trabalho e energia",
+      "descricao": "Conceito de trabalho de uma força, energia cinética e potencial.",
+      "duracao": "15 min",
+      "video": { "provedor": "youtube", "id": "SUBSTITUIR_ID_AQUI" },
+      "links": [],
+      "documentos": [
+        { "titulo": "Slides da aula (PDF)", "url": "docs/exemplo-lista-exercicios.pdf" }
+      ]
+    }
+  ]
+}
