@@ -70,7 +70,7 @@
 
     function desenhar(filtro) {
       lista.textContent = "";
-      var f = semAcento(filtro || "");
+      var f = semAcento(filtro || "").trim();
       var achou = false;
       dados.aulas.forEach(function (a, i) {
         if (f && semAcento(a.titulo + " " + a.descricao).indexOf(f) === -1) return;
@@ -149,10 +149,11 @@
     var aula = dados.aulas[idx];
     cabecalho(aula.titulo, dados.curso.titulo, true);
 
-    var vistas = lerVistas();
+    var meta = el("p", { class: "meta" });
     var btnVista = el("button", { class: "btn", type: "button" });
     function atualizarBotao() {
       var v = lerVistas()[aula.id];
+      meta.textContent = (aula.duracao || "") + (v ? " · assistida" : "");
       btnVista.textContent = v ? "✓ Aula assistida" : "Marcar como assistida";
       btnVista.className = "btn" + (v ? " feito" : " primario");
     }
@@ -173,7 +174,7 @@
       montarPlayer(aula.video, aula.titulo),
       el("div", { class: "detalhe" }, [
         el("h2", { text: aula.titulo }),
-        el("p", { class: "meta", text: (aula.duracao || "") + (vistas[aula.id] ? " · assistida" : "") }),
+        meta,
         el("p", { text: aula.descricao }),
         btnVista
       ]),
@@ -194,7 +195,11 @@
   function rotear() {
     if (!dados) return;
     var m = /^#\/aula\/(.+)$/.exec(location.hash);
-    if (m) telaAula(decodeURIComponent(m[1])); else telaLista();
+    var idAula = null;
+    if (m) {
+      try { idAula = decodeURIComponent(m[1]); } catch (e) { location.hash = "#/"; return; }
+    }
+    if (idAula !== null) telaAula(idAula); else telaLista();
     window.scrollTo(0, 0);
     app.focus({ preventScroll: true });
   }
