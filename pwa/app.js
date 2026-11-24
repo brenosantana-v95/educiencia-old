@@ -1,7 +1,9 @@
 (function () {
   "use strict";
 
-  var DADOS_URL = "data/aulas.json";
+  var CFG = window.AULAS_CONFIG || {};
+  var REST = CFG.supabaseUrl + "/rest/v1/";
+  var STORAGE_PUBLICO = CFG.supabaseUrl + "/storage/v1/object/public/materiais/";
   var CHAVE_VISTAS = "aulas.vistas.v1";
   var app = document.getElementById("app");
   var tituloTopo = document.getElementById("titulo-topo");
@@ -99,11 +101,7 @@
     var id = video && video.provedor === "youtube" ? String(video.id || "") : "";
     if (!/^[A-Za-z0-9_-]{11}$/.test(id)) {
       caixa.appendChild(el("div", { class: "player-aviso" }, [
-        el("div", null, [
-          "Vídeo de exemplo. Coloque o ID do vídeo do YouTube em ",
-          el("code", { text: "data/aulas.json" }),
-          "."
-        ])
+        el("div", { text: "Esta aula ainda não tem vídeo." })
       ]));
       return caixa;
     }
@@ -128,7 +126,7 @@
   function listaMateriais(titulo, itens, rotuloTipo) {
     var sec = el("section", { class: "secao" }, [el("h3", { text: titulo })]);
     var validos = (itens || []).map(function (i) {
-      return { titulo: i.titulo, href: urlSegura(i.url) };
+      return { titulo: i.titulo, href: urlSegura(i.url), rotulo: i.rotulo || rotuloTipo };
     }).filter(function (i) { return i.href; });
     if (!validos.length) {
       sec.appendChild(el("p", { class: "vazio", text: "Nada por aqui nesta aula." }));
@@ -137,7 +135,7 @@
     validos.forEach(function (i) {
       sec.appendChild(el("a", { class: "item-link", href: i.href, target: "_blank", rel: "noopener noreferrer" }, [
         el("span", { text: i.titulo }),
-        el("small", { text: rotuloTipo })
+        el("small", { text: i.rotulo })
       ]));
     });
     return sec;
@@ -178,8 +176,8 @@
         el("p", { text: aula.descricao }),
         btnVista
       ]),
-      listaMateriais("Links para aprofundar", aula.links, "Link"),
-      listaMateriais("Documentos", aula.documentos, "Arquivo"),
+      listaMateriais("Materiais para baixar", aula.documentos, "Arquivo"),
+      listaMateriais("Links úteis", aula.links, "Link"),
       nav
     ].forEach(function (n) { app.appendChild(n); });
   }
@@ -188,6 +186,12 @@
     cabecalho("Aulas", "", false);
     app.textContent = "";
     app.appendChild(el("p", { class: "vazio", text: msg }));
+  }
+
+  function telaIndisponivel(curso) {
+    cabecalho((curso && curso.titulo) || "Aulas", (curso && curso.professor) || "", false);
+    app.textContent = "";
+    app.appendChild(el("p", { class: "indisponivel", role: "status", text: "Curso ainda não disponível" }));
   }
 
   /* ---------- rotas ---------- */
@@ -207,10 +211,79 @@
   btnVoltar.addEventListener("click", function () { location.hash = "#/"; });
   window.addEventListener("hashchange", rotear);
 
-  fetch(DADOS_URL, { cache: "no-cache" })
-    .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
-    .then(function (j) { dados = j; rotear(); })
-    .catch(function () { telaErro("Não foi possível carregar as aulas. Verifique a conexão e tente de novo."); });
+  /* ---------- dados (Supabase REST, só leitura com chave pública) ---------- */
+
+  function api(caminho) {
+    return fetch(REST + caminho, { headers: { apikey: CFG.supabaseKey, Accept: "application/json" }, cache: "no-cache" })
+      .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); });
+  }
+
+  function tamanhoLegivel(b) {
+    if (!b) return "Arquivo";
+    var mb = b / 1048576;
+    return mb >= 1 ? mb.toFixed(1).replace(".", ",") + " MB" : Math.max(1, Math.round(b / 1024)) + " KB";
+  }
+
+  function urlMaterial(caminho, titulo) {
+    var nome = String(caminho).split("/").pop();
+    return STORAGE_PUBLICO + caminho.split("/").map(encodeURIComponent).join("/") +
+      "?download=" + encodeURIComponent(nome || titulo);
+  }
+
+  function normalizar(curso, aulas) {
+    return {
+      curso: curso,
+      aulas: aulas.map(function (a) {
+        var rec = (a.recursos || []).slice().sort(function (x, y) { return x.ordem - y.ordem; });
+        return {
+          id: a.id,
+          titulo: a.titulo,
+          descricao: a.descricao || "",
+          duracao: a.duracao || "",
+          video: { provedor: "youtube", id: a.youtube_id || "" },
+          links: rec.filter(function (r) { return r.tipo === "link"; })
+            .map(function (r) { return { titulo: r.titulo, url: r.url }; }),
+          documentos: rec.filter(function (r) { return r.tipo === "material" && r.storage_path; })
+            .map(function (r) { return { titulo: r.titulo, url: urlMaterial(r.storage_path, r.titulo), rotulo: tamanhoLegivel(r.tamanho_bytes) }; })
+        };
+      })
+    };
+  }
+
+  /* Curso desligado: apaga as aulas guardadas para uso offline. */
+  function limparAulasEmCache() {
+    if (!("caches" in window)) return;
+    caches.keys().then(function (nomes) {
+      nomes.filter(function (n) { return n.indexOf("aulas-dados-") === 0; }).forEach(function (n) {
+        caches.open(n).then(function (c) {
+          c.keys().then(function (reqs) {
+            reqs.forEach(function (r) { if (r.url.indexOf("/rest/v1/aulas") !== -1) c.delete(r); });
+          });
+        });
+      });
+    }).catch(function () { /* ignora */ });
+  }
+
+  function carregar() {
+    if (!/^https?:\/\//.test(CFG.supabaseUrl || "")) {
+      telaErro("App ainda não configurado.");
+      return;
+    }
+    api("config?select=curso_disponivel,titulo,professor,descricao&id=eq.1")
+      .then(function (linhas) {
+        var curso = linhas[0];
+        if (!curso || !curso.curso_disponivel) {
+          dados = null;
+          telaIndisponivel(curso);
+          limparAulasEmCache();
+          return;
+        }
+        return api("aulas?select=id,titulo,descricao,duracao,youtube_id,recursos(tipo,titulo,url,storage_path,tamanho_bytes,ordem)&order=ordem.asc,created_at.asc")
+          .then(function (aulas) { dados = normalizar(curso, aulas); rotear(); });
+      })
+      .catch(function () { telaErro("Não foi possível carregar as aulas. Verifique a conexão e tente de novo."); });
+  }
+  carregar();
 
   /* ---------- instalação ---------- */
 

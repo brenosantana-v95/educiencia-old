@@ -1,11 +1,12 @@
-/* Service worker: casca do app em cache + aulas.json "rede primeiro". */
-var VERSAO = "v1";
+/* Service worker: casca do app em cache + dados do Supabase "rede primeiro". */
+var VERSAO = "v2";
 var CACHE_CASCA = "aulas-casca-" + VERSAO;
 var CACHE_DADOS = "aulas-dados-" + VERSAO;
 var CASCA = [
   "./",
   "index.html",
   "styles.css",
+  "config.js",
   "app.js",
   "manifest.webmanifest",
   "icons/icon-192.png",
@@ -13,13 +14,7 @@ var CASCA = [
 ];
 
 self.addEventListener("install", function (e) {
-  /* aulas.json entra no cache de dados: a primeira abertura ainda não passa pelo SW. */
-  e.waitUntil(Promise.all([
-    caches.open(CACHE_CASCA).then(function (c) { return c.addAll(CASCA); }),
-    caches.open(CACHE_DADOS).then(function (c) {
-      return c.add(new Request("data/aulas.json", { cache: "no-cache" }));
-    })
-  ]));
+  e.waitUntil(caches.open(CACHE_CASCA).then(function (c) { return c.addAll(CASCA); }));
   self.skipWaiting();
 });
 
@@ -33,32 +28,32 @@ self.addEventListener("activate", function (e) {
   );
 });
 
+function guardar(req, res) {
+  if (res && res.ok) {
+    var copia = res.clone();
+    caches.open(CACHE_DADOS).then(function (c) { c.put(req, copia); });
+  }
+  return res;
+}
+
 self.addEventListener("fetch", function (e) {
   var req = e.request;
   if (req.method !== "GET") return;
   var url = new URL(req.url);
-  if (url.origin !== location.origin) return; /* YouTube e links externos passam direto */
 
-  if (url.pathname.endsWith("/data/aulas.json")) {
+  /* Leitura pública do Supabase: config e aulas. Rede primeiro, cópia offline. */
+  if (/\/rest\/v1\/(config|aulas)$/.test(url.pathname)) {
     e.respondWith(
-      fetch(req).then(function (res) {
-        var copia = res.clone();
-        caches.open(CACHE_DADOS).then(function (c) { c.put(req, copia); });
-        return res;
-      }).catch(function () { return caches.match(req); })
+      fetch(req).then(function (res) { return guardar(req, res); })
+        .catch(function () { return caches.match(req, { ignoreVary: true }); })
     );
     return;
   }
 
+  /* Admin, Auth, materiais (abrem em outra aba), YouTube e links externos: sempre rede. */
+  if (url.origin !== location.origin || /\/admin(\.html|\.js|\.css)?$/.test(url.pathname)) return;
+
   e.respondWith(
-    caches.match(req).then(function (hit) {
-      return hit || fetch(req).then(function (res) {
-        if (res.ok && url.pathname.indexOf("/docs/") !== -1) {
-          var copia = res.clone();
-          caches.open(CACHE_DADOS).then(function (c) { c.put(req, copia); });
-        }
-        return res;
-      });
-    })
+    caches.match(req).then(function (hit) { return hit || fetch(req); })
   );
 });
