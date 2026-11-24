@@ -9,7 +9,7 @@
         supabaseKey: "sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH"
       }
     : {
-        supabaseUrl: "SUBSTITUIR_URL_DO_PROJETO",
-        supabaseKey: "SUBSTITUIR_CHAVE_PUBLICA"
+        supabaseUrl: "https://cffdjjwysxpepmiuepnd.supabase.co",
+        supabaseKey: "sb_publishable_3lyWrGvMwxIBMG_KQ8L85g_npKuh2wt"
       };
 })();
