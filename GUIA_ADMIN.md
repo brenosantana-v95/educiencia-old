@@ -1,7 +1,8 @@
-# Guia do painel do curso
+# Guia do painel EduCiência
 
-Endereço do painel: o endereço do app terminando em **`admin.html`**
-(ex.: `https://jtsilvafilho.github.io/aulas-complementares-app/admin.html`).
+Endereço do painel: <https://jtsilvafilho.github.io/educiencia/admin.html>
+
+Primeiro acesso sem senha? Na tela de entrada, digite o e-mail e toque **Esqueci a senha**.
 
 ## Primeiro acesso
 

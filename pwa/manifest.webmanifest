@@ -1,7 +1,7 @@
 {
-  "name": "Aulas complementares",
-  "short_name": "Aulas",
-  "description": "Videoaulas, links e documentos complementares.",
+  "name": "EduCiência",
+  "short_name": "EduCiência",
+  "description": "EduCiência: videoaulas, materiais e links complementares.",
   "lang": "pt-BR",
   "start_url": "./index.html",
   "scope": "./",

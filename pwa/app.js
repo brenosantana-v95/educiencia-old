@@ -8,6 +8,7 @@
     return;
   }
 
+  var NOME_APP = "EduCiência";
   var CFG = window.AULAS_CONFIG || {};
   var REST = CFG.supabaseUrl + "/rest/v1/";
   var STORAGE_PUBLICO = CFG.supabaseUrl + "/storage/v1/object/public/materiais/";
@@ -61,7 +62,7 @@
     tituloTopo.textContent = titulo;
     subtituloTopo.textContent = subtitulo || "";
     btnVoltar.hidden = !comVoltar;
-    document.title = titulo === "Aulas" ? "Aulas complementares" : titulo + " · Aulas";
+    document.title = titulo === NOME_APP ? NOME_APP : titulo + " · " + NOME_APP;
   }
 
   function telaLista() {
@@ -190,13 +191,13 @@
   }
 
   function telaErro(msg) {
-    cabecalho("Aulas", "", false);
+    cabecalho(NOME_APP, "", false);
     app.textContent = "";
     app.appendChild(el("p", { class: "vazio", text: msg }));
   }
 
   function telaIndisponivel(curso) {
-    cabecalho((curso && curso.titulo) || "Aulas", (curso && curso.professor) || "", false);
+    cabecalho((curso && curso.titulo) || NOME_APP,(curso && curso.professor) || "", false);
     app.textContent = "";
     app.appendChild(el("p", { class: "indisponivel", role: "status", text: "Curso ainda não disponível" }));
   }

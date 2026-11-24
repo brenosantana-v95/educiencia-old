@@ -5,7 +5,7 @@ Ninguém precisa passar senha para o desenvolvedor. Só a **URL do projeto** e a
 1. Em <https://supabase.com>, crie uma conta e um projeto gratuito (região: South America, São Paulo). Guarde a senha do banco só no seu gerenciador de senhas.
 2. **Authentication → Sign In / Providers → Email**: deixe ligado. Em **User Signups**, desligue **Allow new users to sign up**.
 3. **Authentication → URL Configuration**:
-   - Site URL: endereço do app (ex.: `https://jtsilvafilho.github.io/aulas-complementares-app/`).
+   - Site URL: endereço do app (`https://jtsilvafilho.github.io/educiencia/`).
    - Redirect URLs: adicione o mesmo endereço terminando em `admin.html`.
 4. **SQL Editor → New query**: cole todo o arquivo `supabase/migrations/20261124000000_init.sql` e clique **Run**. Deve terminar sem erro.
 5. **Authentication → Users → Add user → Send invitation**: e-mail do administrador do curso. Ele recebe um link, abre o painel e cria a própria senha.
