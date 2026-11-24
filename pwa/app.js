@@ -225,7 +225,7 @@
   }
 
   function urlMaterial(caminho, titulo) {
-    var nome = String(caminho).split("/").pop();
+    var nome = String(caminho).split("/").pop().replace(/^[0-9a-f-]{36}-/i, "");
     return STORAGE_PUBLICO + caminho.split("/").map(encodeURIComponent).join("/") +
       "?download=" + encodeURIComponent(nome || titulo);
   }
