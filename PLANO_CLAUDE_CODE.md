@@ -134,6 +134,15 @@ Tarefas:
 
 Aceite: tabela comparativa preenchida e recomendação para o professor.
 
+### Fase 3 (feita): conteúdo no Supabase e painel admin
+- Conteúdo saiu de `aulas.json` e foi para o Supabase (Postgres + Auth + Storage). Schema e RLS em `supabase/migrations/`, testes em `supabase/tests/`.
+- `pwa/admin.html`: login do cliente, chave "Curso disponível", CRUD e ordem de aulas, links e materiais.
+- Curso desligado: app mostra "Curso ainda não disponível".
+- Comentários de alunos: fora por decisão do usuário (LGPD, alunos menores).
+- Publicação: GitHub Action publica `pwa/` no Pages. Guias: `SUPABASE_SETUP.md` e `GUIA_ADMIN.md`.
+- Teste local: `npx supabase@3.3.0 start`, `npx supabase@3.3.0 db reset`, `npx supabase@3.3.0 test db`, `python3 -m http.server -d pwa 8000`.
+- A cada publicação que mude a casca (`app.js`, `config.js`, css), subir `VERSAO` em `sw.js`.
+
 ## 7. Evoluções possíveis (fora do protótipo)
 
 - Planilha Google como fonte de conteúdo (o professor edita a planilha, o app lê).

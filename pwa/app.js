@@ -1,6 +1,13 @@
 (function () {
   "use strict";
 
+  /* Link de convite/recuperação de senha do Supabase cai na raiz: mandar ao painel. */
+  if (/(^|[#&?])(access_token|token_hash|code|error_description)=/.test(location.hash.slice(1) + "&" + location.search.slice(1)) &&
+      /type=(invite|recovery|signup|magiclink)|code=|error_description=/.test(location.hash + location.search)) {
+    location.replace("admin.html" + location.search + location.hash);
+    return;
+  }
+
   var CFG = window.AULAS_CONFIG || {};
   var REST = CFG.supabaseUrl + "/rest/v1/";
   var STORAGE_PUBLICO = CFG.supabaseUrl + "/storage/v1/object/public/materiais/";
