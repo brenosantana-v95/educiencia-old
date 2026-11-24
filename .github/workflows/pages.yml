@@ -22,10 +22,10 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Conferir que não há chave secreta no site
         run: |
-          if grep -rEn "service_role|sb_secret_" pwa/; then
+          if grep -rEn "sb_secret_[A-Za-z0-9_-]{8,}|\"role\" *: *\"service_role\"|c2VydmljZV9yb2xl" pwa/; then
             echo "Chave secreta encontrada em pwa/. Remova antes de publicar."; exit 1
           fi
       - run: touch pwa/.nojekyll
